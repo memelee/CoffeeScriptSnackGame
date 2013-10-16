@@ -37,27 +37,31 @@ class Rect
 	constructor: (@row, @col, len) ->
 		@snack = new Snack(len)
 		@map = []
-		for i in [1..@row]
+		for i in [0..@row + 1]
 			@map[i] = []
-			for j in [1..@col]
+			for j in [0..@col + 1]
 				@map[i][j] = 0
 
 	update: () ->
 		nextPoint = @snack.next()
+		nextMap = @map[nextPoint.x][nextPoint.y]
 
-		if @map[nextPoint.x][nextPoint.y] == 0
+		if nextMap == 0
 			prePoint = @snack.list.shift()
 			@map[prePoint.x][prePoint.y] = 0
 			@list[prePoint.x][prePoint.y].className = "node-0"
-		else if @map[nextPoint.x][nextPoint.y] == 1
+		else if nextMap == 1 or nextMap == 100
 			alert "Failed"
-		else if @map[nextPoint.x][nextPoint.y] == 10
+			start()
+		else if nextMap == 10
 			@snack.len += 1
 			this.showFood()
 
 		@snack.list.push(nextPoint)
 		@map[nextPoint.x][nextPoint.y] = 1
 		@list[nextPoint.x][nextPoint.y].className = "node-1"
+
+		document.getElementById("score").innerHTML = @snack.len
 
 	changeDir: (dir) ->
 		snack.changeDir(dir)
@@ -66,19 +70,28 @@ class Rect
 		for point in @snack.list
 			@map[point.x][point.y] = 1
 
+		for i in [0..@col + 1]
+			@map[0][i] = @map[@row + 1][i] = 100
+		for i in [1..@row]
+			@map[i][0] = @map[i][@col + 1] = 100
+		
 		container = document.createElement("div")
 		container.className = "container"
+		# score = document.createElement("div")
+		# score.className = "score"
+		# score.id = "score"
+		# container.appendChild(score)
 
 		@list = []
 
-		for i in [1..@row]
+		for i in [0..@row + 1]
 			@list[i] = []
-			for j in [1..@col]
+			for j in [0..@col + 1]
 				node = document.createElement("div")
-				node.className = "node-"+@map[i][j]
-				node.id = i+"-"+j
-				node.style.left = (j-1)*16+"px"
-				node.style.top = (i-1)*16+"px"
+				node.className = "node-" + @map[i][j]
+				node.id = i + "-" + j
+				node.style.left = (j - 1) * 16 + "px"
+				node.style.top = (i - 1) * 16 + "px"
 				container.appendChild(node)
 				@list[i][j] = node
 

@@ -89,29 +89,33 @@
       this.col = col;
       this.snack = new Snack(len);
       this.map = [];
-      for (i = _i = 1, _ref = this.row; 1 <= _ref ? _i <= _ref : _i >= _ref; i = 1 <= _ref ? ++_i : --_i) {
+      for (i = _i = 0, _ref = this.row + 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         this.map[i] = [];
-        for (j = _j = 1, _ref1 = this.col; 1 <= _ref1 ? _j <= _ref1 : _j >= _ref1; j = 1 <= _ref1 ? ++_j : --_j) {
+        for (j = _j = 0, _ref1 = this.col + 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
           this.map[i][j] = 0;
         }
       }
     }
 
     Rect.prototype.update = function() {
-      var nextPoint, prePoint;
+      var nextMap, nextPoint, prePoint;
       nextPoint = this.snack.next();
-      if (this.map[nextPoint.x][nextPoint.y] === 0) {
+      nextMap = this.map[nextPoint.x][nextPoint.y];
+      if (nextMap === 0) {
         prePoint = this.snack.list.shift();
         this.map[prePoint.x][prePoint.y] = 0;
         this.list[prePoint.x][prePoint.y].className = "node-0";
-      } else if (this.map[nextPoint.x][nextPoint.y] === 1) {
+      } else if (nextMap === 1 || nextMap === 100) {
         alert("Failed");
-      } else if (this.map[nextPoint.x][nextPoint.y] === 10) {
+        start();
+      } else if (nextMap === 10) {
+        this.snack.len += 1;
         this.showFood();
       }
       this.snack.list.push(nextPoint);
       this.map[nextPoint.x][nextPoint.y] = 1;
-      return this.list[nextPoint.x][nextPoint.y].className = "node-1";
+      this.list[nextPoint.x][nextPoint.y].className = "node-1";
+      return document.getElementById("score").innerHTML = this.snack.len;
     };
 
     Rect.prototype.changeDir = function(dir) {
@@ -119,18 +123,24 @@
     };
 
     Rect.prototype.init = function() {
-      var container, i, j, node, point, _i, _j, _k, _len, _ref, _ref1, _ref2;
+      var container, i, j, node, point, _i, _j, _k, _l, _len, _m, _ref, _ref1, _ref2, _ref3, _ref4;
       _ref = this.snack.list;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         point = _ref[_i];
         this.map[point.x][point.y] = 1;
       }
+      for (i = _j = 0, _ref1 = this.col + 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; i = 0 <= _ref1 ? ++_j : --_j) {
+        this.map[0][i] = this.map[this.row + 1][i] = 100;
+      }
+      for (i = _k = 1, _ref2 = this.row; 1 <= _ref2 ? _k <= _ref2 : _k >= _ref2; i = 1 <= _ref2 ? ++_k : --_k) {
+        this.map[i][0] = this.map[i][this.col + 1] = 100;
+      }
       container = document.createElement("div");
       container.className = "container";
       this.list = [];
-      for (i = _j = 1, _ref1 = this.row; 1 <= _ref1 ? _j <= _ref1 : _j >= _ref1; i = 1 <= _ref1 ? ++_j : --_j) {
+      for (i = _l = 0, _ref3 = this.row + 1; 0 <= _ref3 ? _l <= _ref3 : _l >= _ref3; i = 0 <= _ref3 ? ++_l : --_l) {
         this.list[i] = [];
-        for (j = _k = 1, _ref2 = this.col; 1 <= _ref2 ? _k <= _ref2 : _k >= _ref2; j = 1 <= _ref2 ? ++_k : --_k) {
+        for (j = _m = 0, _ref4 = this.col + 1; 0 <= _ref4 ? _m <= _ref4 : _m >= _ref4; j = 0 <= _ref4 ? ++_m : --_m) {
           node = document.createElement("div");
           node.className = "node-" + this.map[i][j];
           node.id = i + "-" + j;
