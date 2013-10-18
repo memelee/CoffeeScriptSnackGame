@@ -15,10 +15,10 @@ startGame = () ->
 	document.onkeydown = (e) ->
 		e = e || event
 		switch e.keyCode
-			when 37 then rect.snack.changeDir(4)
-			when 38 then rect.snack.changeDir(1)
-			when 39 then rect.snack.changeDir(2)
-			when 40 then rect.snack.changeDir(3)
+			when 37 then rect.changeDir(4)
+			when 38 then rect.changeDir(1)
+			when 39 then rect.changeDir(2)
+			when 40 then rect.changeDir(3)
 
 class Snack
 	constructor: (@len) ->
@@ -49,25 +49,7 @@ class Rect
 				@map[i][j] = 0
 
 	update: () ->
-		nextPoint = @snack.next()
-		nextMap = @map[nextPoint.x][nextPoint.y]
-
-		switch nextMap
-			when 0
-				prePoint = @snack.list.shift()
-				@map[prePoint.x][prePoint.y] = 0
-				@list[prePoint.x][prePoint.y].className = "node-0"
-			when 1, 100
-				alert "Failed!"
-				startGame()
-				return
-			when 10
-				@snack.len += 1
-				this.showFood()			
-
-		@snack.list.push(nextPoint)
-		@map[nextPoint.x][nextPoint.y] = 1
-		@list[nextPoint.x][nextPoint.y].className = "node-1"
+		if this.step() then return
 
 		# document.getElementById("score").innerHTML = @snack.len
 
@@ -75,7 +57,10 @@ class Rect
 		`timer = window.setTimeout(function(){rect.update()}, nextSpeed)`
 
 	changeDir: (dir) ->
-		snack.changeDir(dir)
+		if @snack.dir is dir
+			this.step()
+		else 
+			@snack.changeDir(dir)
 
 	init: () ->
 		for point in @snack.list
@@ -110,6 +95,29 @@ class Rect
 		document.body.appendChild(container)
 		this.showFood()
 		`window.setTimeout(function(){rect.update()}, SPD)`
+
+	step: () ->
+		nextPoint = @snack.next()
+		nextMap = @map[nextPoint.x][nextPoint.y]
+
+		switch nextMap
+			when 0
+				prePoint = @snack.list.shift()
+				@map[prePoint.x][prePoint.y] = 0
+				@list[prePoint.x][prePoint.y].className = "node-0"
+			when 1, 100
+				alert "Score: " + @snack.len 
+				startGame()
+				return 1
+			when 10
+				@snack.len += 1
+				this.showFood()			
+
+		@snack.list.push(nextPoint)
+		@map[nextPoint.x][nextPoint.y] = 1
+		@list[nextPoint.x][nextPoint.y].className = "node-1"
+
+		return 0
 
 	showFood: () ->
 		foodX = Math.round(Math.random() * @row)

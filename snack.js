@@ -23,13 +23,13 @@
       e = e || event;
       switch (e.keyCode) {
         case 37:
-          return rect.snack.changeDir(4);
+          return rect.changeDir(4);
         case 38:
-          return rect.snack.changeDir(1);
+          return rect.changeDir(1);
         case 39:
-          return rect.snack.changeDir(2);
+          return rect.changeDir(2);
         case 40:
-          return rect.snack.changeDir(3);
+          return rect.changeDir(3);
       }
     };
   };
@@ -103,33 +103,20 @@
     }
 
     Rect.prototype.update = function() {
-      var nextMap, nextPoint, nextSpeed, prePoint;
-      nextPoint = this.snack.next();
-      nextMap = this.map[nextPoint.x][nextPoint.y];
-      switch (nextMap) {
-        case 0:
-          prePoint = this.snack.list.shift();
-          this.map[prePoint.x][prePoint.y] = 0;
-          this.list[prePoint.x][prePoint.y].className = "node-0";
-          break;
-        case 1:
-        case 100:
-          alert("Failed!");
-          startGame();
-          return;
-        case 10:
-          this.snack.len += 1;
-          this.showFood();
+      var nextSpeed;
+      if (this.step()) {
+        return;
       }
-      this.snack.list.push(nextPoint);
-      this.map[nextPoint.x][nextPoint.y] = 1;
-      this.list[nextPoint.x][nextPoint.y].className = "node-1";
       nextSpeed = SPD - this.snack.len;
       return timer = window.setTimeout(function(){rect.update()}, nextSpeed);
     };
 
     Rect.prototype.changeDir = function(dir) {
-      return snack.changeDir(dir);
+      if (this.snack.dir === dir) {
+        return this.step();
+      } else {
+        return this.snack.changeDir(dir);
+      }
     };
 
     Rect.prototype.init = function() {
@@ -163,6 +150,31 @@
       document.body.appendChild(container);
       this.showFood();
       return window.setTimeout(function(){rect.update()}, SPD);
+    };
+
+    Rect.prototype.step = function() {
+      var nextMap, nextPoint, prePoint;
+      nextPoint = this.snack.next();
+      nextMap = this.map[nextPoint.x][nextPoint.y];
+      switch (nextMap) {
+        case 0:
+          prePoint = this.snack.list.shift();
+          this.map[prePoint.x][prePoint.y] = 0;
+          this.list[prePoint.x][prePoint.y].className = "node-0";
+          break;
+        case 1:
+        case 100:
+          alert("Score: " + this.snack.len);
+          startGame();
+          return 1;
+        case 10:
+          this.snack.len += 1;
+          this.showFood();
+      }
+      this.snack.list.push(nextPoint);
+      this.map[nextPoint.x][nextPoint.y] = 1;
+      this.list[nextPoint.x][nextPoint.y].className = "node-1";
+      return 0;
     };
 
     Rect.prototype.showFood = function() {
