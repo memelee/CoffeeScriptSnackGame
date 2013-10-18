@@ -35,7 +35,9 @@ class Snack
 			when 3 then return { x: point.x + 1, y: point.y }
 			when 4 then return { x: point.x, y: point.y - 1 }
 
-	changeDir: (@dir) ->
+	changeDir: (dir) ->
+		if Math.abs(@dir - dir) isnt 2
+			@dir = dir
 
 class Rect
 	constructor: (@row, @col, len) ->

@@ -77,7 +77,9 @@
     };
 
     Snack.prototype.changeDir = function(dir) {
-      this.dir = dir;
+      if (Math.abs(this.dir - dir) !== 2) {
+        return this.dir = dir;
+      }
     };
 
     return Snack;
