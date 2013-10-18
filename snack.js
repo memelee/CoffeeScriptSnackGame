@@ -13,6 +13,7 @@
   rect = null;
 
   window.onload = function() {
+    SPD = prompt("Input Speed", "500");
     return startGame();
   };
 

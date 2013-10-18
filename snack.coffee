@@ -6,6 +6,7 @@ LEN = 5
 rect = null
 
 window.onload = () ->
+	SPD = prompt("Input Speed","500")
 	startGame()
 
 startGame = () ->
