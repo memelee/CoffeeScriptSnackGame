@@ -27,6 +27,9 @@ class Snack
 		for i in [1..@len]
 			@list.push({ x: 1, y: i	})
 
+	current: () ->
+		return @list[@list.length - 1]
+
 	next: () ->
 		point = @list[@list.length - 1]
 		switch @dir
@@ -92,11 +95,15 @@ class Rect
 				container.appendChild(node)
 				@list[i][j] = node
 
+		curPoint = @snack.current()
+		@list[curPoint.x][curPoint.y].className = "node-1-" + @snack.dir
+		
 		document.body.appendChild(container)
 		this.showFood()
 		`window.setTimeout(function(){rect.update()}, SPD)`
 
 	step: () ->
+		curPoint = @snack.current()
 		nextPoint = @snack.next()
 		nextMap = @map[nextPoint.x][nextPoint.y]
 
@@ -104,7 +111,7 @@ class Rect
 			when 0
 				prePoint = @snack.list.shift()
 				@map[prePoint.x][prePoint.y] = 0
-				@list[prePoint.x][prePoint.y].className = "node-0"
+				@list[prePoint.x][prePoint.y].className = "node-0" 
 			when 1, 100
 				alert "Score: " + @snack.len 
 				startGame()
@@ -115,7 +122,8 @@ class Rect
 
 		@snack.list.push(nextPoint)
 		@map[nextPoint.x][nextPoint.y] = 1
-		@list[nextPoint.x][nextPoint.y].className = "node-1"
+		@list[nextPoint.x][nextPoint.y].className = "node-1-" + @snack.dir
+		@list[curPoint.x][curPoint.y].className = "node-1"
 
 		return 0
 

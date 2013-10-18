@@ -49,6 +49,10 @@
       }
     }
 
+    Snack.prototype.current = function() {
+      return this.list[this.list.length - 1];
+    };
+
     Snack.prototype.next = function() {
       var point;
       point = this.list[this.list.length - 1];
@@ -120,7 +124,7 @@
     };
 
     Rect.prototype.init = function() {
-      var container, i, j, node, point, _i, _j, _k, _l, _len, _m, _ref, _ref1, _ref2, _ref3, _ref4;
+      var container, curPoint, i, j, node, point, _i, _j, _k, _l, _len, _m, _ref, _ref1, _ref2, _ref3, _ref4;
       _ref = this.snack.list;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         point = _ref[_i];
@@ -147,13 +151,16 @@
           this.list[i][j] = node;
         }
       }
+      curPoint = this.snack.current();
+      this.list[curPoint.x][curPoint.y].className = "node-1-" + this.snack.dir;
       document.body.appendChild(container);
       this.showFood();
       return window.setTimeout(function(){rect.update()}, SPD);
     };
 
     Rect.prototype.step = function() {
-      var nextMap, nextPoint, prePoint;
+      var curPoint, nextMap, nextPoint, prePoint;
+      curPoint = this.snack.current();
       nextPoint = this.snack.next();
       nextMap = this.map[nextPoint.x][nextPoint.y];
       switch (nextMap) {
@@ -173,7 +180,8 @@
       }
       this.snack.list.push(nextPoint);
       this.map[nextPoint.x][nextPoint.y] = 1;
-      this.list[nextPoint.x][nextPoint.y].className = "node-1";
+      this.list[nextPoint.x][nextPoint.y].className = "node-1-" + this.snack.dir;
+      this.list[curPoint.x][curPoint.y].className = "node-1";
       return 0;
     };
 
