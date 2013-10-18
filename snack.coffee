@@ -3,10 +3,14 @@ COL = 40
 SPD = 500
 LEN = 5
 
+rect = null
+
 window.onload = () ->
+	startGame()
+
+startGame = () ->
 	rect = new Rect(ROW, COL, LEN)
 	rect.init()
-	`window.setInterval(function(){rect.update()}, SPD)`
 
 	document.onkeydown = (e) ->
 		e = e || event
@@ -46,22 +50,27 @@ class Rect
 		nextPoint = @snack.next()
 		nextMap = @map[nextPoint.x][nextPoint.y]
 
-		if nextMap == 0
-			prePoint = @snack.list.shift()
-			@map[prePoint.x][prePoint.y] = 0
-			@list[prePoint.x][prePoint.y].className = "node-0"
-		else if nextMap == 1 or nextMap == 100
-			alert "Failed"
-			start()
-		else if nextMap == 10
-			@snack.len += 1
-			this.showFood()
+		switch nextMap
+			when 0
+				prePoint = @snack.list.shift()
+				@map[prePoint.x][prePoint.y] = 0
+				@list[prePoint.x][prePoint.y].className = "node-0"
+			when 1, 100
+				alert "Failed!"
+				startGame()
+				return
+			when 10
+				@snack.len += 1
+				this.showFood()			
 
 		@snack.list.push(nextPoint)
 		@map[nextPoint.x][nextPoint.y] = 1
 		@list[nextPoint.x][nextPoint.y].className = "node-1"
 
-		document.getElementById("score").innerHTML = @snack.len
+		# document.getElementById("score").innerHTML = @snack.len
+
+		nextSpeed = SPD - @snack.len
+		`timer = window.setTimeout(function(){rect.update()}, nextSpeed)`
 
 	changeDir: (dir) ->
 		snack.changeDir(dir)
@@ -77,6 +86,7 @@ class Rect
 		
 		container = document.createElement("div")
 		container.className = "container"
+
 		# score = document.createElement("div")
 		# score.className = "score"
 		# score.id = "score"
@@ -97,6 +107,7 @@ class Rect
 
 		document.body.appendChild(container)
 		this.showFood()
+		`window.setTimeout(function(){rect.update()}, SPD)`
 
 	showFood: () ->
 		foodX = Math.round(Math.random() * @row)
